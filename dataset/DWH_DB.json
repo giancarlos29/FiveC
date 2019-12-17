@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "Ventas",
-			"table": "config"
+			"table": "SA_Trans_Items"
 		}
 	}
 }

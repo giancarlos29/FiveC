@@ -17,13 +17,17 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT * FROM Ventas.Config",
+						"sqlReaderQuery": {
+							"value": "SELECT * from @{pipeline().parameters.ConfigTable} where EnabledCreatedOn = 1 or EnabledModifiedOn = 1\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
 						"referenceName": "DWH_DB",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
@@ -83,7 +87,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "SELECT @{item().SelectScript} FROM @{item().SRC_tab}",
+										"value": "SELECT @{item().SelectScript} FROM @{item().Source_tab}",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00"
@@ -160,6 +164,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"ConfigTable": {
+				"type": "string",
+				"defaultValue": "Ventas.Config"
+			}
+		},
 		"annotations": []
 	}
 }
