@@ -1,10 +1,6 @@
 {
 	"name": "CincoCSRL",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "ADMCLOUD_Az",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": []

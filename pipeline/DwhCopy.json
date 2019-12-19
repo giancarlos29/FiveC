@@ -150,10 +150,6 @@
 										"type": "DateTime"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "CincoC_DWH",
-								"type": "LinkedServiceReference"
 							}
 						}
 					]

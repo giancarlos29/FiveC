@@ -1,10 +1,6 @@
 {
 	"name": "CincoC_SRL",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "admLinkedServ",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [],
