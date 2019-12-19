@@ -1,6 +1,10 @@
 {
 	"name": "DWH_DB",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CincoC_srlDWH",
+			"type": "LinkedServiceReference"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [],

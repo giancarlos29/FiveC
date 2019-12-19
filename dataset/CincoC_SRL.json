@@ -1,12 +1,16 @@
 {
 	"name": "CincoC_SRL",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AdmLinkSer",
+			"type": "LinkedServiceReference"
+		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "SA_Trans_Items"
+			"table": "AP_VendorClasses"
 		}
 	}
 }
