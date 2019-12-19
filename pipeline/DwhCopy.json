@@ -1,0 +1,171 @@
+{
+	"name": "DwhCopy",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupInConfig",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * from @{pipeline().parameters.ConfigTable} where EnabledCreatedOn = 1 or EnabledModifiedOn = 1\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "DWH_DB",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ValuesWithNotDate",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "LookupInConfig",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupInConfig').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().Source_Type, 'Not Date')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Iterator for Copy",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "ValuesWithNotDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('ValuesWithNotDate').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy to DWH",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"queryTimeout": "02:00:00"
+								},
+								"sink": {
+									"type": "AzureSqlSink"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "CincoC_SRL",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DWH_DB",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "SP_UpdateWatermarks",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy to DWH",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[Ventas].[sp_UpdateWatermak]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": {
+											"value": "@{item().ID}",
+											"type": "Expression"
+										},
+										"type": "Int16"
+									},
+									"NewWatermark": {
+										"value": {
+											"value": "@{formatDateTime(utcnow(),'s')}",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"NewWatermarkModified": {
+										"value": {
+											"value": "@{formatDateTime(utcnow(),'s')}",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "CincoC_DWH",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"ConfigTable": {
+				"type": "string",
+				"defaultValue": "Ventas.Config"
+			}
+		},
+		"annotations": []
+	}
+}
