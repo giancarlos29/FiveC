@@ -18,7 +18,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT * from @{pipeline().parameters.ConfigTable} where EnabledCreatedOn = 1 or EnabledModifiedOn = 1\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1",
+							"value": "SELECT \nId\n,Source_Type\n,Source_name\n,EnabledCreatedOn\n,EnabledModifiedOn\n,PrimaryKey\n,Source_tab\n,Destiny_tab\n,Source_TabAlias\n,SelectScript\n,WatermarkColumnCreated\n,WatermarkValueCreated\n,WatermarkColumnModified\n,WatermarkValueModified\n  from @{pipeline().parameters.ConfigTable} where EnabledCreatedOn = 1 or EnabledModifiedOn = 1\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00"
@@ -86,23 +86,44 @@
 							"typeProperties": {
 								"source": {
 									"type": "SqlServerSource",
+									"sqlReaderQuery": {
+										"value": "SELECT @{item().SelectScript} FROM @{item().Source_tab}",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00"
 								},
 								"sink": {
-									"type": "AzureSqlSink"
+									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "truncate table @{item().Destiny_tab}",
+										"type": "Expression"
+									},
+									"disableMetricsCollection": false
 								},
 								"enableStaging": false
 							},
 							"inputs": [
 								{
 									"referenceName": "CincoC_SRL",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"TableName": {
+											"value": "@pipeline().parameters.ConfigTable",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
 								{
 									"referenceName": "DWH_DB",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"TableName": {
+											"value": "@{item().DST_tab}",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						},
@@ -215,6 +236,10 @@
 							"typeProperties": {
 								"source": {
 									"type": "SqlServerSource",
+									"sqlReaderQuery": {
+										"value": "SELECT @{item().SelectScript} FROM @{item().Source_tab}\nWHERE @{item().WatermarkColumnCreated} > \n'@{item().WatermarkValueCreated}'\n",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00"
 								},
 								"sink": {
@@ -225,13 +250,25 @@
 							"inputs": [
 								{
 									"referenceName": "CincoC_SRL",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"TableName": {
+											"value": "@pipeline().parameters.ConfigTable\n",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
 								{
 									"referenceName": "DWH_DB",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"TableName": {
+											"value": "@{item().Destiny_tab}",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						},
