@@ -85,11 +85,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": {
-										"value": "SELECT @{item().SelectScript} FROM @{item().Source_tab}",
-										"type": "Expression"
-									},
+									"type": "SqlServerSource",
 									"queryTimeout": "02:00:00"
 								},
 								"sink": {
@@ -99,7 +95,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "CincoCSRL",
+									"referenceName": "CincoC_SRL",
 									"type": "DatasetReference"
 								}
 							],
