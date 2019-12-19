@@ -72,7 +72,7 @@
 					},
 					"activities": [
 						{
-							"name": "Copy to DWH",
+							"name": "Copy NotDatesone  to DWH",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -132,7 +132,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Copy to DWH",
+									"activity": "Copy NotDatesone  to DWH",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -222,7 +222,7 @@
 					},
 					"activities": [
 						{
-							"name": "Copy to DWH",
+							"name": "Copy to Datesone to DWH",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -277,7 +277,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Copy to DWH",
+									"activity": "Copy to Datesone to DWH",
 									"dependencyConditions": [
 										"Succeeded"
 									]
