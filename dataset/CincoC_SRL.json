@@ -9,8 +9,8 @@
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "dbo",
-			"table": "AP_VendorClasses"
+			"schema": "a",
+			"table": "a"
 		}
 	}
 }
